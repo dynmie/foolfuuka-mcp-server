@@ -94,8 +94,8 @@ describe("Integration: MCP server", () => {
 
     expect(text).toMatch(/^## .+\n\nAvailable boards:\n\n\| Board \| Name \|/);
     expect(text).toContain("| /a/ | Anime & Manga |");
-    expect(text).toContain("| /pol/ | Politically Incorrect |");
-    expect(text).toContain("| /b/ | Random |");
+    expect(text).toContain("| /co/ | Comics & Cartoons |");
+    expect(text).toContain("| /tg/ | Traditional Games |");
   }, 30000);
 
   it("6.4.3 search_archive returns markdown table", async () => {

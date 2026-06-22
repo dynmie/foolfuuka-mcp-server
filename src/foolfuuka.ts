@@ -14,6 +14,13 @@ function getUserAgent(): string {
   return process.env.FOOLFUUKA_USER_AGENT || "foolfuuka-mcp-server/1.0";
 }
 
+function getBoardsEnv(): string | null {
+  const val = process.env.FOOLFUUKA_BOARDS;
+  if (!val || typeof val !== "string") return null;
+  const trimmed = val.trim();
+  return trimmed.length > 0 ? trimmed : null;
+}
+
 function buildUrl(path: string, params?: Record<string, string | number | undefined>): string {
   const base = getBaseUrl().replace(/\/+$/, "");
   const url = new URL(`${base}/_/api/chan${path}`);
@@ -187,26 +194,91 @@ const FOURCHAN_BOARDS: Array<{ shortname: string; name: string }> = [
   { shortname: "xs", name: "Extreme Sports" },
 ];
 
+const DESUARCHIVE_BOARDS = [
+  "a", "aco", "an", "c", "cgl", "co", "d", "fit", "g", "his",
+  "int", "k", "m", "mlp", "mu", "q", "qa", "r9k", "tg", "trash", "vr", "wsg",
+];
+
+function isDesuArchive(): boolean {
+  return getBaseUrl().includes("desuarchive.org");
+}
+
+function parseBoardsEnvVar(): string[] | null {
+  const raw = getBoardsEnv();
+  if (!raw) return null;
+  const boards = raw
+    .split(",")
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
+  return boards.length > 0 ? [...new Set(boards)] : null;
+}
+
+function resolveBoards(
+  shortnames: string[],
+): Array<{ shortname: string; name: string; search_enabled: boolean }> {
+  const lookup = new Map(FOURCHAN_BOARDS.map((b) => [b.shortname, b.name]));
+  return shortnames.map((s) => ({
+    shortname: s,
+    name: lookup.get(s) ?? s,
+    search_enabled: true,
+  }));
+}
+
 export async function listBoards(): Promise<{
   site: { url: string; name: string; title: string; global_search_enabled: boolean };
   boards: Array<{ shortname: string; name: string; search_enabled: boolean }>;
 }> {
-  let site: { url: string; name: string; title: string; global_search_enabled: boolean };
+  // 1. Env var override takes highest priority
+  const envBoards = parseBoardsEnvVar();
+  if (envBoards) {
+    let site: { url: string; name: string; title: string; global_search_enabled: boolean };
+    try {
+      const url = buildUrl("/boards/");
+      const body = await apiFetch(url) as BoardsResponse;
+      site = body.site ?? { url: getBaseUrl(), name: "4chan", title: "4chan", global_search_enabled: true };
+    } catch {
+      site = { url: getBaseUrl(), name: "4chan", title: "4chan", global_search_enabled: true };
+    }
+    return { site, boards: resolveBoards(envBoards) };
+  }
 
+  // 2. Desuarchive default subset
+  if (isDesuArchive()) {
+    let site: { url: string; name: string; title: string; global_search_enabled: boolean };
+    try {
+      const url = buildUrl("/boards/");
+      const body = await apiFetch(url) as BoardsResponse;
+      site = body.site ?? { url: getBaseUrl(), name: "Desuarchive", title: "Desuarchive", global_search_enabled: true };
+    } catch {
+      site = { url: getBaseUrl(), name: "Desuarchive", title: "Desuarchive", global_search_enabled: true };
+    }
+    return { site, boards: resolveBoards(DESUARCHIVE_BOARDS) };
+  }
+
+  // 3. Non-desuarchive: try API, fall back to full hardcoded list
   try {
     const url = buildUrl("/boards/");
     const body = await apiFetch(url) as BoardsResponse;
-    site = body.site ?? { url: getBaseUrl(), name: "4chan", title: "4chan", global_search_enabled: true };
+    const site = body.site ?? { url: getBaseUrl(), name: "4chan", title: "4chan", global_search_enabled: true };
+
+    if (body?.boards && typeof body.boards === "object") {
+      const apiBoards = Object.values(body.boards).map((b) => ({
+        shortname: b.shortname,
+        name: b.name,
+        search_enabled: true,
+      }));
+      if (apiBoards.length > 0) {
+        return { site, boards: apiBoards };
+      }
+    }
+
+    return { site, boards: resolveBoards(FOURCHAN_BOARDS.map((b) => b.shortname)) };
   } catch {
-    site = { url: getBaseUrl(), name: "4chan", title: "4chan", global_search_enabled: true };
+    return {
+      site: { url: getBaseUrl(), name: "4chan", title: "4chan", global_search_enabled: true },
+      boards: resolveBoards(FOURCHAN_BOARDS.map((b) => b.shortname)),
+    };
   }
-
-  const boards = FOURCHAN_BOARDS.map((b) => ({
-    ...b,
-    search_enabled: true,
-  }));
-
-  return { site, boards };
 }
 
 export function parseGhostNum(num: string): { postNum: string; subnum: string } {

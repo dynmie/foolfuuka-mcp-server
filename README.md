@@ -32,6 +32,7 @@ Add to your MCP client config (Claude Desktop, VS Code, etc.):
 |---|---|---|
 | `FOOLFUUKA_BASE_URL` | `https://desuarchive.org` | Root URL of a FoolFuuka archive |
 | `FOOLFUUKA_USER_AGENT` | `foolfuuka-mcp-server/1.0` | User-Agent header sent with API requests |
+| `FOOLFUUKA_BOARDS` | none | Comma-separated board shortnames to display (e.g. `"a,aco,an"`). Overrides the default board list. When unset, desuarchive uses a curated subset matching its mirrors; other archives attempt the API then fall back to a full hardcoded list. |
 
 > [!TIP]
 > Desuarchive works out of the box. For Cloudflare-protected archives (4plebs, archived.moe), you may need to run the server on a machine with the archive whitelisted, or use a different base URL.
@@ -68,7 +69,7 @@ List available boards for the configured archive.
 
 **Parameters:** none
 
-Returns a markdown table of board shortnames and names, plus site name and search-enabled board count. Note: boards are hardcoded — desuarchive's API returns incomplete listings, but hidden boards still work for search and post lookups.
+Returns a markdown table of board shortnames and names, plus site name and search-enabled board count. The board list comes from `FOOLFUUKA_BOARDS` if set, otherwise a desuarchive-curated subset or API response depending on the archive. Boards not in the list still work for search and post lookups.
 
 ## Examples
 
