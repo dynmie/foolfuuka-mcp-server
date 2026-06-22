@@ -32,7 +32,7 @@ Add to your MCP client config (Claude Desktop, VS Code, etc.):
 |---|---|---|
 | `FOOLFUUKA_BASE_URL` | `https://desuarchive.org` | Root URL of a FoolFuuka archive |
 | `FOOLFUUKA_USER_AGENT` | `foolfuuka-mcp-server/1.0` | User-Agent header sent with API requests |
-| `FOOLFUUKA_BOARDS` | none | Comma-separated board shortnames to display (e.g. `"a,aco,an"`). Overrides the default board list. When unset, desuarchive uses a curated subset matching its mirrors; other archives attempt the API then fall back to a full hardcoded list. |
+| `FOOLFUUKA_BOARDS` | none | Comma-separated board shortnames to display (e.g. `"a,g,vr"`). Overrides the default board list. When unset, desuarchive uses a curated subset matching its mirrors; other archives attempt the API then fall back to a full hardcoded list. |
 
 > [!TIP]
 > Desuarchive works out of the box. For Cloudflare-protected archives (4plebs, archived.moe), you may need to run the server on a machine with the archive whitelisted, or use a different base URL.
