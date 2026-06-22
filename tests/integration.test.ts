@@ -107,7 +107,7 @@ describe("Integration: MCP server", () => {
     const text = result.content[0].text;
 
     expect(text).toMatch(/^## Search: "hello" on \/a\//);
-    expect(text).toMatch(/\| Post \| Date \| Author \| Excerpt \|/);
+    expect(text).toMatch(/\| Thread \| Post \| Date \| Author \| Excerpt \|/);
   }, 30000);
 
   it("6.4.4 get_post returns markdown post details", async () => {

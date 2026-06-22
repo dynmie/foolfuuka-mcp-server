@@ -26,7 +26,7 @@ const server = new McpServer(
 );
 
 server.registerTool("search_archive", {
-  description: "Full-text search across archived 4chan posts. Filter by board, text, date range, file type, and more. Returns matching posts with excerpts and metadata.",
+  description: "Full-text search across archived 4chan posts. Parameters: text (comment search), boards (dot-delimited, e.g. \"a\" or \"adv.trv\"), subject, username, tripcode, capcode, filename, image (MD5 hash), uid, country, deleted, ghost, filter (image/text), type (sticky/op/posts), start/end (YYYY-MM-DD), results (thread to group), order (asc/desc), page. Returns a markdown table with Board, Thread, Post, Date, Author, Excerpt columns.",
   inputSchema: {
     text: z.string().optional().describe("Comment text to search for"),
     boards: z.string().optional().describe("Dot-delimited board shortnames, e.g. \"a\" or \"adv.trv\". Omit to search all boards"),
@@ -64,9 +64,9 @@ server.registerTool("search_archive", {
     md += `Found ${result.posts.length} of ${totalFound.toLocaleString()} matching posts (page ${args.page} of ${totalPages}, 25 per page)\n\n`;
 
     if (isMultiBoard) {
-      md += "| Board | Post | Date | Author | Excerpt |\n|-------|------|------|--------|---------|\n";
+      md += "| Board | Thread | Post | Date | Author | Excerpt |\n|-------|--------|------|------|--------|---------|\n";
     } else {
-      md += "| Post | Date | Author | Excerpt |\n|------|------|--------|---------|\n";
+      md += "| Thread | Post | Date | Author | Excerpt |\n|--------|------|------|--------|---------|\n";
     }
 
     for (const post of result.posts) {
@@ -74,10 +74,12 @@ server.registerTool("search_archive", {
       const excerpt = sanitizeTableCell(post.comment_sanitized || "");
       const date = formatTimestamp(post.timestamp, true);
       const author = sanitizeTableCell(post.name, 40);
+      const postDisplay = `#${post.num}${post.op === "1" ? " (OP)" : ""}`;
+      const threadDisplay = `#${post.thread_num}`;
       if (isMultiBoard) {
-        md += `| ${boardShort} | #${post.num} | ${date} | ${author} | ${excerpt} |\n`;
+        md += `| ${boardShort} | ${threadDisplay} | ${postDisplay} | ${date} | ${author} | ${excerpt} |\n`;
       } else {
-        md += `| #${post.num} | ${date} | ${author} | ${excerpt} |\n`;
+        md += `| ${threadDisplay} | ${postDisplay} | ${date} | ${author} | ${excerpt} |\n`;
       }
     }
 
@@ -89,7 +91,7 @@ server.registerTool("search_archive", {
 });
 
 server.registerTool("get_thread", {
-  description: "Retrieve all posts in a thread from a 4chan archive. Returns the OP post and all replies with full content, timestamps, and media attachments.",
+  description: "Retrieve all posts in a thread from a 4chan archive. Parameters: board (shortname), num (thread OP post number), latest_doc_id (incremental fetch, returns only newer posts), last_limit (max posts to return, default 100, pass 0 for all). Returns formatted thread with OP and replies including author, timestamp, subject, content, and media attachments.",
   inputSchema: {
     board: z.string().describe("Board shortname, e.g. \"a\""),
     num: z.number().describe("Thread OP post number"),
@@ -135,7 +137,7 @@ server.registerTool("get_thread", {
 });
 
 server.registerTool("get_post", {
-  description: "Retrieve a single post from a 4chan archive by board and post number. Includes post content, author info, timestamps, and media if present.",
+  description: "Retrieve a single post from a 4chan archive by board and post number. Parameters: board (shortname), num (post number, can include _ suffix for ghost posts, e.g. \"676_1\"). Returns post details including author, date, board, thread number, subject, content, and media (filename, dimensions, size) with image link.",
   inputSchema: {
     board: z.string().describe("Board shortname, e.g. \"a\""),
     num: z.string().describe("Post number. Can include _ suffix for ghost posts, e.g. \"676_1\""),
@@ -162,7 +164,7 @@ server.registerTool("get_post", {
 });
 
 server.registerTool("list_boards", {
-  description: "List all available boards on the configured 4chan archive. Returns board shortnames and full names, plus site metadata.",
+  description: "List all available boards on the configured 4chan archive. No parameters required. Returns a markdown table with Board and Name columns, plus site name and search-enabled board count.",
   inputSchema: {},
 }, async () => {
   try {

@@ -4,7 +4,7 @@
   "description": "MCP server for querying 4chan archives via the FoolFuuka API",
   "type": "module",
   "bin": {
-    "foolfuuka-mcp-server": "./dist/index.js"
+    "foolfuuka-mcp-server": "dist/index.js"
   },
   "files": [
     "dist"

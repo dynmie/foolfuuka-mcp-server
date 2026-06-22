@@ -107,6 +107,8 @@ export async function getPost(board: string, num: string): Promise<Post> {
   return body;
 }
 
+// Hardcoded because desuarchive's /_/api/chan/boards/ returns incomplete/wrong board
+// listings. The API still accepts and works with these boards for search/post lookups.
 const FOURCHAN_BOARDS: Array<{ shortname: string; name: string }> = [
   { shortname: "a", name: "Anime & Manga" },
   { shortname: "b", name: "Random" },
