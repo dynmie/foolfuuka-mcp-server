@@ -55,7 +55,6 @@ server.registerTool("search_archive", {
       return formatSuccess(`No posts found matching "${args.text ?? ""}".`);
     }
 
-    const isMultiBoard = !args.boards || args.boards.includes(".");
     const totalFound = result.meta?.total_found ?? result.posts.length;
     const maxResults = result.meta?.max_results ?? 0;
     const totalPages = maxResults > 0 ? Math.ceil(maxResults / 25) : 1;
@@ -63,11 +62,7 @@ server.registerTool("search_archive", {
     let md = `## Search: "${args.text ?? ""}"${args.boards ? ` on /${args.boards}/` : " (all boards)"}\n\n`;
     md += `Found ${result.posts.length} of ${totalFound.toLocaleString()} matching posts (page ${args.page} of ${totalPages}, 25 per page)\n\n`;
 
-    if (isMultiBoard) {
-      md += "| Board | Thread | Post | Date | Author | Excerpt |\n|-------|--------|------|------|--------|---------|\n";
-    } else {
-      md += "| Thread | Post | Date | Author | Excerpt |\n|--------|------|------|--------|---------|\n";
-    }
+    md += "| Board | Thread | Post | Date | Author | Excerpt |\n|-------|--------|------|------|--------|---------|\n";
 
     for (const post of result.posts) {
       const boardShort = post.board?.shortname ? `/${post.board.shortname}/` : "";
@@ -76,11 +71,7 @@ server.registerTool("search_archive", {
       const author = sanitizeTableCell(post.name, 40);
       const postDisplay = `#${post.num}${post.op === "1" ? " (OP)" : ""}`;
       const threadDisplay = `#${post.thread_num}`;
-      if (isMultiBoard) {
-        md += `| ${boardShort} | ${threadDisplay} | ${postDisplay} | ${date} | ${author} | ${excerpt} |\n`;
-      } else {
-        md += `| ${threadDisplay} | ${postDisplay} | ${date} | ${author} | ${excerpt} |\n`;
-      }
+      md += `| ${boardShort} | ${threadDisplay} | ${postDisplay} | ${date} | ${author} | ${excerpt} |\n`;
     }
 
     md += `\n*Use \`get_thread\` to view a full thread or \`get_post\` for a single post.*`;

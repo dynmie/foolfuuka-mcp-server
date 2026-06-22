@@ -92,12 +92,12 @@ Response (single-board):
 
 Found 25 of 330 matching posts (page 1 of 200, 25 per page)
 
-| Thread | Post | Date | Author | Excerpt |
-|--------|------|------|--------|---------|
-| #288811815 | #288821283 | 2026-06-20 | Anonymous | They say in /au/ that Japanese otakus don't like Kamiina Botan... |
-| #288749749 | #288763277 | 2026-06-17 | Anonymous | So uh... How about that erm, K-Kamiina Botan? |
-| #288735782 | #288744910 | 2026-06-16 | Anonymous | Kamiina Botan is the best romance anime of the decade. |
-| #288692733 | #288705032 | 2026-06-14 | Anonymous | Kamiina Botan the best yuri anime adaptation of all time... |
+| Board | Thread | Post | Date | Author | Excerpt |
+|-------|--------|------|------|--------|---------|
+| /a/ | #288811815 | #288821283 | 2026-06-20 | Anonymous | They say in /au/ that Japanese otakus don't like Kamiina Botan... |
+| /a/ | #288749749 | #288763277 | 2026-06-17 | Anonymous | So uh... How about that erm, K-Kamiina Botan? |
+| /a/ | #288735782 | #288744910 | 2026-06-16 | Anonymous | Kamiina Botan is the best romance anime of the decade. |
+| /a/ | #288692733 | #288705032 | 2026-06-14 | Anonymous | Kamiina Botan the best yuri anime adaptation of all time... |
 ```
 
 ```json
