@@ -113,7 +113,7 @@ FoolFuuka archives enforce rate limits (e.g., ~5 requests/minute on 4plebs). The
 ## Development
 
 ```sh
-git clone <repo>
+git clone https://github.com/dynmie/foolfuuka-mcp-server.git
 cd foolfuuka-mcp-server
 npm install
 npm run build
