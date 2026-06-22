@@ -44,23 +44,23 @@ Full-text search across archived posts with filters.
 
 **Parameters:** `text`, `boards`, `subject`, `username`, `tripcode`, `capcode`, `filename`, `image`, `uid`, `country`, `deleted`, `ghost`, `filter`, `type`, `start`, `end`, `results`, `order`, `page`
 
-Returns a markdown table of matching posts with excerpts.
+Returns a markdown table with **Board**, **Thread**, **Post**, **Date**, **Author**, **Excerpt** columns. OP posts are marked with **(OP)**. Use single-board or multi-board mode depending on the `boards` parameter.
 
 ### `get_thread`
 
 Retrieve all posts in a thread.
 
-**Parameters:** `board`, `num`, `latest_doc_id` (incremental), `last_limit` (default 100)
+**Parameters:** `board`, `num`, `latest_doc_id` (incremental), `last_limit` (default 100, pass 0 for all)
 
-Returns the OP post and all replies in markdown with author, timestamp, content, and media.
+Returns the OP post and all replies in formatted markdown with author, timestamp, subject, content, and media attachments.
 
 ### `get_post`
 
 Retrieve a single post.
 
-**Parameters:** `board`, `num` (supports `_` suffix for ghost posts)
+**Parameters:** `board`, `num` (supports `_` suffix for ghost posts, e.g. `"676_1"`)
 
-Returns full post details including media link when present.
+Returns post details including author, date, board, thread number, subject, content, media (filename, dimensions, size), and image link when present.
 
 ### `list_boards`
 
@@ -68,7 +68,7 @@ List available boards for the configured archive.
 
 **Parameters:** none
 
-Returns a markdown table of board shortnames and names.
+Returns a markdown table of board shortnames and names, plus site name and search-enabled board count. Note: boards are hardcoded — desuarchive's API returns incomplete listings, but hidden boards still work for search and post lookups.
 
 ## Examples
 
@@ -79,9 +79,24 @@ Returns a markdown table of board shortnames and names.
   "method": "tools/call",
   "params": {
     "name": "search_archive",
-    "arguments": { "boards": "a", "text": "hello world", "page": 1 }
+     "arguments": { "boards": "a", "text": "kamiina botan", "page": 1 }
   }
 }
+```
+
+Response (single-board):
+
+```markdown
+## Search: "kamiina botan" on /a/
+
+Found 25 of 330 matching posts (page 1 of 200, 25 per page)
+
+| Thread | Post | Date | Author | Excerpt |
+|--------|------|------|--------|---------|
+| #288811815 | #288821283 | 2026-06-20 | Anonymous | They say in /au/ that Japanese otakus don't like Kamiina Botan... |
+| #288749749 | #288763277 | 2026-06-17 | Anonymous | So uh... How about that erm, K-Kamiina Botan? |
+| #288735782 | #288744910 | 2026-06-16 | Anonymous | Kamiina Botan is the best romance anime of the decade. |
+| #288692733 | #288705032 | 2026-06-14 | Anonymous | Kamiina Botan the best yuri anime adaptation of all time... |
 ```
 
 ```json
@@ -91,9 +106,41 @@ Returns a markdown table of board shortnames and names.
   "method": "tools/call",
   "params": {
     "name": "get_thread",
-    "arguments": { "board": "a", "num": 112800651 }
+    "arguments": { "board": "a", "num": 288342508 }
   }
 }
+```
+
+Response:
+
+```markdown
+## Thread #288342508 on /a/
+
+**OP** by Anonymous — 2026-05-26 14:38:49 UTC
+**Subject:** Marriagetoxin
+> Best girl is here.
+> 
+> Sorry Kinosaki.
+📎 [SubsPlease] MARRIAGETOXIN - 08 (720p) [50718D73].mkv-2026-05-26-10h38m13s978.jpg (1280×720, 234 KB)
+
+---
+
+**#288342579** by Anonymous — 2026-05-26 14:42:24 UTC
+> why is Gero spending so much time with Mei on the weekend?
+📎 [SubsPlease] MARRIAGETOXIN - 08 (720p) [50718D73].mkv-2026-05-26-10h42m06s075.jpg (1280×720, 244 KB)
+
+---
+
+**#288344069** by Anonymous — 2026-05-26 16:06:53 UTC
+> Genuinely best girl.
+
+---
+
+**#288345985** by Anonymous — 2026-05-26 17:40:31 UTC
+> >>288342508
+> In a series of Best Girls, Hamster Lady is absolutely Best Best Girl.
+> 
+> Her main 'attack' is putting on a Carnivale costume and dancing with hamsters!
 ```
 
 ## How it works
