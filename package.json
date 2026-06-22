@@ -1,0 +1,43 @@
+{
+  "name": "foolfuuka-mcp-server",
+  "version": "0.1.0",
+  "description": "MCP server for querying 4chan archives via the FoolFuuka API",
+  "type": "module",
+  "bin": {
+    "foolfuuka-mcp-server": "./dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dynmie/foolfuuka-mcp-server.git"
+  },
+  "keywords": [
+    "mcp",
+    "4chan",
+    "foolfuuka",
+    "archive",
+    "desuarchive"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.16.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.7.0",
+    "vitest": "^4.1.9"
+  }
+}
